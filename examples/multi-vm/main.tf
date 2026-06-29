@@ -35,16 +35,19 @@ resource "azurerm_network_security_group" "main" {
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
 
-  security_rule {
-    name                       = "allow-ssh"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "22"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
+  dynamic "security_rule" {
+    for_each = { for idx, port in each.value.open_ports : port => idx }
+    content {
+      name = "open-port-${security_rule.key}"
+      priority = 100
+      direction = "Inbound"
+      access = "Allow"
+      protocol = "Tcp"
+      source_port_range = "*"
+      destination_port_range     = security_rule.key
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
   }
 }
 
