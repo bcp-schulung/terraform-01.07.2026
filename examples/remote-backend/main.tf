@@ -255,4 +255,9 @@ resource "azurerm_linux_virtual_machine" "test" {
   # disable_password_authentication = false + admin_password) to avoid a
   # perpetual diff after import.
   disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+0Yi5ANXAJQDX+Z2ArY5ivpSbjaMGj4zn3LyDaOIJ3apdnUwCJHXZzs7lnAKgXXnA4PeI5Gve4ZGPPfLLU7uq2Z7DTpSR81C7jFBj58XCU7IEAPsSsmVQOIZwW2qZMt8MJitlK5Q4p8FmCxNDwffGfYxswJhTbHH8hKkdCn9Y+HLzQObL17qw99M03pGuWlH5YReF6EAqa8Hmqxb1vrnebKdo2sRaHJSjvLO/gfXniyJniVww1zP8VwARxYj/WgVeR6EJeeHmSRrhzZw3P87q2VnW1Rayc3WopX6s0lNiDUZwOY6tMxBfcKdjdf5McK7m5h9/+tpafLsLQhbjvMhAQ65v21xgyWI/UFJqlmWpcGk0Q1XufhR40w91GDBa7yKmaLocYta1/vgmnb4/eiFodDJ3szizRdVLiNvykBAhlQqREgC1UtD6XD8vLaIfdR9GBvQi3mEZWzG2rSpG5rqZy0YNSPWXH0Z3cHhL/ch/coihA/lGGX9+6YaRAiG+SL0="
+  }
 }
