@@ -189,3 +189,70 @@ resource "azurerm_virtual_network_peering" "app_to_client" {
     azurerm_subnet.client,
   ]
 }
+
+# ─── Imported: manually created VM + NIC + Public IP ─────────────────────────
+
+import {
+  to = azurerm_public_ip.test
+  id = "/subscriptions/cbc7eedf-6bc9-4ba6-aba0-ec01f95cb078/resourceGroups/rg-tf-lab/providers/Microsoft.Network/publicIPAddresses/test-ip"
+}
+
+resource "azurerm_public_ip" "test" {
+  name                = "test-ip"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+import {
+  to = azurerm_network_interface.test
+  id = "/subscriptions/cbc7eedf-6bc9-4ba6-aba0-ec01f95cb078/resourceGroups/rg-tf-lab/providers/Microsoft.Network/networkInterfaces/test628_z2"
+}
+
+resource "azurerm_network_interface" "test" {
+  name                = "test628_z2"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+
+  ip_configuration {
+    name                          = "ipconfig1"
+    subnet_id                     = azurerm_subnet.backend.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.test.id
+  }
+}
+
+import {
+  to = azurerm_linux_virtual_machine.test
+  id = "/subscriptions/cbc7eedf-6bc9-4ba6-aba0-ec01f95cb078/resourceGroups/rg-tf-lab/providers/Microsoft.Compute/virtualMachines/test"
+}
+
+resource "azurerm_linux_virtual_machine" "test" {
+  name                = "test"
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  size                = "Standard_D2s_v3"
+  admin_username      = "azureuser"
+
+  network_interface_ids = [azurerm_network_interface.test.id]
+
+  os_disk {
+    name                 = "test_OsDisk_1_3e33d8ac03f142f3871e493b67b05955"
+    caching              = "ReadWrite"
+    storage_account_type = "Premium_LRS"
+  }
+
+  source_image_reference {
+    publisher = "canonical"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server"
+    version   = "latest"
+  }
+
+  # Azure does not expose SSH keys or passwords via the API — Terraform cannot
+  # read them back on import. Add the matching admin_ssh_key block (or set
+  # disable_password_authentication = false + admin_password) to avoid a
+  # perpetual diff after import.
+  disable_password_authentication = true
+}
