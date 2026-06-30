@@ -166,6 +166,13 @@ resource "azurerm_virtual_network_peering" "client_to_app" {
   virtual_network_name      = azurerm_virtual_network.client.name
   remote_virtual_network_id = azurerm_virtual_network.app.id
   allow_forwarded_traffic   = true
+
+  depends_on = [
+    azurerm_subnet_network_security_group_association.web,
+    azurerm_subnet_network_security_group_association.backend,
+    azurerm_subnet_network_security_group_association.db,
+    azurerm_subnet.client,
+  ]
 }
 
 resource "azurerm_virtual_network_peering" "app_to_client" {
@@ -174,4 +181,11 @@ resource "azurerm_virtual_network_peering" "app_to_client" {
   virtual_network_name      = azurerm_virtual_network.app.name
   remote_virtual_network_id = azurerm_virtual_network.client.id
   allow_forwarded_traffic   = true
+
+  depends_on = [
+    azurerm_subnet_network_security_group_association.web,
+    azurerm_subnet_network_security_group_association.backend,
+    azurerm_subnet_network_security_group_association.db,
+    azurerm_subnet.client,
+  ]
 }
