@@ -82,6 +82,18 @@ resource "azurerm_network_security_group" "backend" {
   }
 
   security_rule {
+    name                       = "allow-rdp"
+    priority                   = 200
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3389"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
     name                       = "deny-internet-inbound"
     priority                   = 4000
     direction                  = "Inbound"
@@ -188,4 +200,50 @@ resource "azurerm_virtual_network_peering" "app_to_client" {
     azurerm_subnet_network_security_group_association.db,
     azurerm_subnet.client,
   ]
+}
+
+# ─── Backend Windows VM ───────────────────────────────────────────────────────
+
+resource "azurerm_public_ip" "backend_vm" {
+  name                = "${var.prefix}-backend-vm-pip"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_network_interface" "backend_vm" {
+  name                = "${var.prefix}-backend-vm-nic"
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.backend.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.backend_vm.id
+  }
+}
+
+resource "azurerm_windows_virtual_machine" "backend" {
+  name                = "${var.prefix}-backend-vm"
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  size                = "Standard_B2s"
+  admin_username      = var.admin_username
+  admin_password      = var.admin_password
+
+  network_interface_ids = [azurerm_network_interface.backend_vm.id]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2022-datacenter-azure-edition"
+    version   = "latest"
+  }
 }

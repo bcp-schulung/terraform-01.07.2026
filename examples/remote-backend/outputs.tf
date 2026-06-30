@@ -37,3 +37,13 @@ output "subnet_client_id" {
   description = "ID of the client subnet"
   value       = azurerm_subnet.client.id
 }
+
+output "backend_vm_public_ip" {
+  description = "Public IP address of the backend Windows VM — use for RDP"
+  value       = azurerm_public_ip.backend_vm.ip_address
+}
+
+output "backend_vm_name" {
+  description = "Name of the backend Windows VM"
+  value       = azurerm_windows_virtual_machine.backend.name
+}

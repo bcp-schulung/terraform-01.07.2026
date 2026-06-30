@@ -9,3 +9,15 @@ variable "prefix" {
   type        = string
   default     = "lab"
 }
+
+variable "admin_username" {
+  description = "Administrator username for the backend Windows VM"
+  type        = string
+  default     = "azureuser"
+}
+
+variable "admin_password" {
+  description = "Administrator password for the backend Windows VM (min 12 chars, must include upper, lower, digit, special)"
+  type        = string
+  sensitive   = true
+}
