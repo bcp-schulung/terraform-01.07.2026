@@ -13,6 +13,11 @@ variable "prefix" {
   description = "Prefix applied to all resource names."
 }
 
+variable "trusted_rdp_cidr" {
+  type        = string
+  description = "CIDR block allowed to RDP to the backend VM (e.g. \"203.0.113.10/32\")."
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags applied to all resources."

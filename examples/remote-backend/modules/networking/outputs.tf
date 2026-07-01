@@ -19,6 +19,11 @@ output "subnet_client_id" {
 }
 
 output "app_vnet_id" {
-
+  description = "Resource ID of the App VNet."
   value       = azurerm_virtual_network.app.id
+}
+
+output "subnet_agw_id" {
+  description = "Resource ID of snet-agw (Application Gateway subnet)."
+  value       = azurerm_subnet.agw.id
 }
