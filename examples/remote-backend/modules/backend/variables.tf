@@ -28,11 +28,6 @@ variable "key_vault_id" {
   description = "Resource ID of the Key Vault that holds the VM admin password secret."
 }
 
-variable "trusted_rdp_cidr" {
-  type        = string
-  description = "CIDR block allowed to RDP to the VM (e.g. \"203.0.113.10/32\")."
-}
-
 variable "tags" {
   type        = map(string)
   description = "Tags applied to all resources."
