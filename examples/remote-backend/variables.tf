@@ -25,7 +25,6 @@ variable "aad_admin_object_id" {
   type        = string
 }
 
-
 variable "tags" {
   description = "Tags applied to all resources."
   type        = map(string)
