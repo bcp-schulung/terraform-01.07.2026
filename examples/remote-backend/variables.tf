@@ -10,14 +10,24 @@ variable "prefix" {
   default     = "lab"
 }
 
-variable "admin_username" {
-  description = "Administrator username for the backend Windows VM"
+variable "trusted_rdp_cidr" {
+  description = "CIDR block allowed to RDP to the backend VM (e.g. \"203.0.113.10/32\")."
   type        = string
-  default     = "azureuser"
 }
 
-variable "admin_password" {
-  description = "Administrator password for the backend Windows VM (min 12 chars, must include upper, lower, digit, special)"
+variable "sql_admin_username" {
+  description = "SQL Server administrator login name."
   type        = string
-  sensitive   = true
+}
+
+variable "aad_admin_object_id" {
+  description = "Azure AD object ID of the SQL Azure AD administrator."
+  type        = string
+}
+
+
+variable "tags" {
+  description = "Tags applied to all resources."
+  type        = map(string)
+  default     = {}
 }

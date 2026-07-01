@@ -18,3 +18,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "trusted_rdp_cidr" { # e.g. "203.0.113.10/32"
+  description = "Explict access for ip / range"
+  type        = string
+}
