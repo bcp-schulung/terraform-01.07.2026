@@ -19,6 +19,6 @@ output "subnet_client_id" {
 }
 
 output "app_vnet_id" {
-  description = "Resource ID of the App VNet."
+
   value       = azurerm_virtual_network.app.id
 }
