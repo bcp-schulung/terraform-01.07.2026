@@ -117,7 +117,7 @@ resource "azurerm_monitor_diagnostic_setting" "sql" {
     category = "SQLSecurityAuditEvents"
   }
 
-  metric {
+  enabled_metric {
     category = "Basic"
   }
 }
