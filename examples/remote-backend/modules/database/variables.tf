@@ -1,40 +1,40 @@
 variable "resource_group_name" {
-  description = "Name of the resource group"
   type        = string
+  description = "Name of the existing resource group."
 }
 
 variable "location" {
-  description = "Location of the resource group"
   type        = string
+  description = "Azure region for all resources."
 }
 
 variable "prefix" {
-  description = "Short prefix used to name all resources of this module"
   type        = string
-}
-
-variable "tags" {
-  description = "Tags for the module"
-  type        = map(string)
-  default     = {}
+  description = "Prefix applied to all resource names."
 }
 
 variable "subnet_db_id" {
-  description = "Which subnet id to use"
   type        = string
+  description = "Resource ID of snet-db (from networking module)."
 }
 
 variable "app_vnet_id" {
-  description = "Id for the vnet of the backend"
   type        = string
+  description = "Resource ID of the App VNet (for the private DNS zone link)."
 }
 
 variable "sql_admin_username" {
-  description = "sql admin username"
   type        = string
+  description = "SQL Server administrator login name."
 }
 
-variable "aad_admin_object_id" { # your own Azure AD object ID
-  description = "AAD object id for admin"
+variable "aad_admin_object_id" {
   type        = string
+  description = "Azure AD object ID of the SQL Azure AD administrator."
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags applied to all resources."
+  default     = {}
 }

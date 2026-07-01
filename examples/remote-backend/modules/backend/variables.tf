@@ -1,40 +1,40 @@
 variable "resource_group_name" {
-  description = "Name of the resource group"
   type        = string
+  description = "Name of the existing resource group."
 }
 
 variable "location" {
-  description = "Location of the resource group"
   type        = string
+  description = "Azure region for all resources."
 }
 
 variable "prefix" {
-  description = "Short prefix used to name all resources of this module"
   type        = string
-}
-
-variable "tags" {
-  description = "Tags for the module"
-  type        = map(string)
-  default     = {}
+  description = "Prefix applied to all resource names."
 }
 
 variable "subnet_id" {
-  description = "Which subnet id to use"
   type        = string
+  description = "Resource ID of snet-backend (from networking module)."
 }
 
 variable "admin_username" {
-  description = "Admin username"
   type        = string
+  description = "Local administrator username for the Windows VM."
 }
 
-variable "key_vault_id" { # from database/platform module
-  description = "Secret Mgmt"
+variable "key_vault_id" {
   type        = string
+  description = "Resource ID of the Key Vault that holds the VM admin password secret."
 }
 
-variable "trusted_rdp_cidr" { # e.g. "203.0.113.10/32"
-  description = "Explict access for ip / range"
+variable "trusted_rdp_cidr" {
   type        = string
+  description = "CIDR block allowed to RDP to the VM (e.g. \"203.0.113.10/32\")."
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags applied to all resources."
+  default     = {}
 }

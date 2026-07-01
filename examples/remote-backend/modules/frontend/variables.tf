@@ -1,21 +1,21 @@
 variable "resource_group_name" {
-  description = "Name of the resource group"
   type        = string
+  description = "Name of the existing resource group."
 }
 
 variable "location" {
-  description = "Location of the resource group"
   type        = string
+  description = "Azure region for all resources."
 }
 
 variable "prefix" {
-  description = "Short prefix used to name all resources of this module"
   type        = string
+  description = "Prefix applied to all resource names."
 }
 
-variable "subnet_id" { # snet-web ID from networking module
-  description = "Which subnet id to use"
+variable "subnet_id" {
   type        = string
+  description = "Resource ID of snet-web (from networking module)."
 }
 
 variable "agw_subnet_id" {
@@ -23,13 +23,13 @@ variable "agw_subnet_id" {
   description = "Resource ID of snet-agw (from networking module), used for the Application Gateway."
 }
 
-variable "backend_fqdn" { # passed from backend module output
-  description = "The FQDN of the backend module"
+variable "backend_fqdn" {
   type        = string
+  description = "Private IP or FQDN of the backend tier."
 }
 
 variable "tags" {
-  description = "Tags for the module"
   type        = map(string)
+  description = "Tags applied to all resources."
   default     = {}
 }
