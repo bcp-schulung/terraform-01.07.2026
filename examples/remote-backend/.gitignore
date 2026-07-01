@@ -1,0 +1,27 @@
+# Terraform local state files
+*.tfstate
+*.tfstate.backup
+
+# Terraform working directory
+.terraform/
+
+# Dependency lock file — commit this to pin provider versions
+# .terraform.lock.hcl
+
+# Local backend override (used to bypass remote backend during dev/plan)
+backend_override.tf
+override.tf
+*_override.tf
+
+# Generated plan files
+*.tfplan
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Sensitive variable files — add your own values and never commit
+# terraform.tfvars is committed here because it contains no secrets;
+# if you add secrets, move them to a *.auto.tfvars file and gitignore that pattern below
+*.secret.tfvars
+*.auto.tfvars

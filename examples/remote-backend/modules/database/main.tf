@@ -1,5 +1,14 @@
 data "azurerm_client_config" "current" {}
 
+# Stable random suffix — ensures globally-unique names for Key Vault and SQL Server
+resource "random_id" "suffix" {
+  byte_length = 3
+  keepers = {
+    prefix              = var.prefix
+    resource_group_name = var.resource_group_name
+  }
+}
+
 # ─── Key Vault (shared with backend module) ───────────────────────────────────
 
 resource "random_password" "sql_admin" {
@@ -9,7 +18,7 @@ resource "random_password" "sql_admin" {
 }
 
 resource "azurerm_key_vault" "main" {
-  name                       = "${var.prefix}-kv"
+  name                       = "${var.prefix}-kv-${random_id.suffix.hex}"
   location                   = var.location
   resource_group_name        = var.resource_group_name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
@@ -36,7 +45,7 @@ resource "azurerm_key_vault_secret" "sql_admin_password" {
 # ─── SQL Server ───────────────────────────────────────────────────────────────
 
 resource "azurerm_mssql_server" "main" {
-  name                          = "${var.prefix}-sql"
+  name                          = "${var.prefix}-sql-${random_id.suffix.hex}"
   resource_group_name           = var.resource_group_name
   location                      = var.location
   version                       = "12.0"

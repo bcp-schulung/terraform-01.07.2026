@@ -1,5 +1,14 @@
 # ─── App Service ──────────────────────────────────────────────────────────────
 
+# Stable random suffix — App Service hostnames must be globally unique
+resource "random_id" "suffix" {
+  byte_length = 3
+  keepers = {
+    prefix              = var.prefix
+    resource_group_name = var.resource_group_name
+  }
+}
+
 resource "azurerm_service_plan" "main" {
   name                = "${var.prefix}-asp"
   location            = var.location
@@ -10,7 +19,7 @@ resource "azurerm_service_plan" "main" {
 }
 
 resource "azurerm_linux_web_app" "main" {
-  name                = "${var.prefix}-app"
+  name                = "${var.prefix}-app-${random_id.suffix.hex}"
   location            = var.location
   resource_group_name = var.resource_group_name
   service_plan_id     = azurerm_service_plan.main.id

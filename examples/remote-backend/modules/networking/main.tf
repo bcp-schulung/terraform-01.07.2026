@@ -163,6 +163,58 @@ resource "azurerm_subnet_network_security_group_association" "db" {
   network_security_group_id = azurerm_network_security_group.db.id
 }
 
+# Application Gateway v2 requires its own NSG with specific platform rules
+resource "azurerm_network_security_group" "agw" {
+  name                = "${var.prefix}-nsg-agw"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+
+  # Mandatory: Azure platform uses this port range for AGW v2 health management
+  security_rule {
+    name                       = "allow-gateway-manager"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "65200-65535"
+    source_address_prefix      = "GatewayManager"
+    destination_address_prefix = "*"
+  }
+
+  # Required for health probes from the Azure internal load balancer
+  security_rule {
+    name                       = "allow-azure-load-balancer"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "AzureLoadBalancer"
+    destination_address_prefix = "*"
+  }
+
+  # Allow public HTTP/HTTPS traffic that the AGW will route
+  security_rule {
+    name                       = "allow-internet-http-https"
+    priority                   = 120
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_ranges    = ["80", "443"]
+    source_address_prefix      = "Internet"
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "agw" {
+  subnet_id                 = azurerm_subnet.agw.id
+  network_security_group_id = azurerm_network_security_group.agw.id
+}
+
 # ─── Client VNet ──────────────────────────────────────────────────────────────
 
 resource "azurerm_virtual_network" "client" {
