@@ -18,6 +18,11 @@ variable "subnet_id" { # snet-web ID from networking module
   type        = string
 }
 
+variable "agw_subnet_id" {
+  type        = string
+  description = "Resource ID of snet-agw (from networking module), used for the Application Gateway."
+}
+
 variable "backend_fqdn" { # passed from backend module output
   description = "The FQDN of the backend module"
   type        = string
