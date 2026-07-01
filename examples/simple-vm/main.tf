@@ -1,5 +1,5 @@
 data "azurerm_resource_group" "main" {
-    name = var.resource_group_name
+  name = var.resource_group_name
 }
 
 resource "tls_private_key" "main" {

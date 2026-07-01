@@ -1,5 +1,5 @@
 data "azurerm_resource_group" "main" {
-    name = var.resource_group_name
+  name = var.resource_group_name
 }
 
 resource "tls_private_key" "main" {
@@ -38,12 +38,12 @@ resource "azurerm_network_security_group" "main" {
   dynamic "security_rule" {
     for_each = { for idx, port in each.value.open_ports : port => idx }
     content {
-      name = "open-port-${security_rule.key}"
-      priority = 100
-      direction = "Inbound"
-      access = "Allow"
-      protocol = "Tcp"
-      source_port_range = "*"
+      name                       = "open-port-${security_rule.key}"
+      priority                   = 100
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
       destination_port_range     = security_rule.key
       source_address_prefix      = "*"
       destination_address_prefix = "*"
@@ -66,13 +66,13 @@ resource "azurerm_network_interface" "main" {
 }
 
 resource "azurerm_network_interface_security_group_association" "main" {
-  for_each = var.vms
+  for_each                  = var.vms
   network_interface_id      = azurerm_network_interface.main[each.key].id
   network_security_group_id = azurerm_network_security_group.main[each.key].id
 }
 
 resource "azurerm_linux_virtual_machine" "main" {
-  for_each = var.vms
+  for_each            = var.vms
   name                = "${var.prefix}-${each.key}"
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
