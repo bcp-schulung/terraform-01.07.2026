@@ -1,0 +1,94 @@
+name: Terraform CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─── Format Check ────────────────────────────────────────────────────────────
+  fmt:
+    name: Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.9"
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive -diff
+        working-directory: ${{ github.workspace }}
+
+  # ─── Lint ─────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint (${{ matrix.dir }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir:
+          - examples/simple-vm
+          - examples/multi-vm
+          - examples/remote-backend
+          - examples/remote-backend/modules/backend
+          - examples/remote-backend/modules/database
+          - examples/remote-backend/modules/frontend
+          - examples/remote-backend/modules/networking
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Init TFLint
+        run: tflint --init
+        working-directory: ${{ github.workspace }}/${{ matrix.dir }}
+        env:
+          # Required so tflint can download the Azure plugin
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Run TFLint
+        run: tflint --format compact --recursive
+        working-directory: ${{ github.workspace }}/${{ matrix.dir }}
+
+  # ─── Validate ────────────────────────────────────────────────────────────────
+  validate:
+    name: Validate (${{ matrix.dir }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir:
+          - examples/simple-vm
+          - examples/multi-vm
+          - examples/remote-backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.9"
+
+      - name: Terraform Init (no backend)
+        run: terraform init -backend=false
+        working-directory: ${{ github.workspace }}/${{ matrix.dir }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ github.workspace }}/${{ matrix.dir }}
