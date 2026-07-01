@@ -13,8 +13,33 @@ module "networking" {
   trusted_rdp_cidr    = var.trusted_rdp_cidr
 }
 
+# ─── Database & shared Key Vault ──────────────────────────────────────────────
 
+module "database" {
+  source              = "./modules/database"
+  resource_group_name = var.resource_group_name
+  location            = data.azurerm_resource_group.main.location
+  prefix              = var.prefix
+  subnet_db_id        = module.networking.subnet_db_id
+  app_vnet_id         = module.networking.app_vnet_id
+  sql_admin_username  = var.sql_admin_username
+  aad_admin_object_id = var.aad_admin_object_id
+  tags                = var.tags
+}
 
+# ─── Backend ──────────────────────────────────────────────────────────────────
+
+module "backend" {
+  source              = "./modules/backend"
+  resource_group_name = var.resource_group_name
+  location            = data.azurerm_resource_group.main.location
+  prefix              = var.prefix
+  subnet_id           = module.networking.subnet_backend_id
+  admin_username      = var.admin_username
+  key_vault_id        = module.database.key_vault_id
+  trusted_rdp_cidr    = var.trusted_rdp_cidr
+  tags                = var.tags
+}
 
 # ─── Frontend ─────────────────────────────────────────────────────────────────
 

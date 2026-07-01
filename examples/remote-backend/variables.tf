@@ -10,6 +10,12 @@ variable "prefix" {
   default     = "lab"
 }
 
+variable "admin_username" {
+  description = "Administrator username for the backend Windows VM."
+  type        = string
+  default     = "azureuser"
+}
+
 variable "trusted_rdp_cidr" {
   description = "CIDR block allowed to RDP to the backend VM (e.g. \"203.0.113.10/32\")."
   type        = string
